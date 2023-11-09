@@ -31,7 +31,8 @@ def main():
     )
 
     parser.add_argument(
-        '--feature_eng', dest='feature_eng',
+        '--feature_eng', 
+        dest='feature_eng',
         help='Train and test Naive Bayes with different feature types',
         action='store_true'
     )
@@ -45,12 +46,12 @@ def main():
     if args.model == 'naive-bayes':
         print("Training naive bayes classifier...")
         nb = model.train(train_data)
-        print("Accuracy: ", accuracy(nb, test_data))
+        print("Accuracy: ", accuracy(nb, test_data)) #change it for test_data
         print("F_1: ", f_1(nb, test_data))
 
         if args.test_smooth:
             train_smooth(train_data, test_data)
-
+            
         if args.feature_eng:
             train_feature_eng(train_data, test_data)
     else:
@@ -59,4 +60,12 @@ def main():
 
 
 if __name__ == "__main__":
+    # (train_data, test_data) = read_hate_tweets(TWEETS_ANNO, TWEETS_TEXT)
+    # model = MODEL_DICT['naive-bayes']
+    # nb = model.train(train_data)
+    # model_results = nb.model
+    
+    # X = [tupla[0] for tupla in train_data]
+    # true_labels = [tupla[1] for tupla in train_data]
+    # predicted_labels = [nb.predict(x) for x in X]
     main()

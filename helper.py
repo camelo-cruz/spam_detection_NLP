@@ -1,4 +1,6 @@
+import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 from model.naivebayes import NaiveBayes, features1, features2
 from model.logreg import LogReg, featurize
@@ -15,9 +17,48 @@ def train_smooth(train_data, test_data):
     #         the graph for your submission.
 
     ######################### STUDENT SOLUTION #########################
-    pass
-    ####################################################################
-
+    
+    folder_path = 'plots'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    
+    values = np.linspace(2, 0, num=10)
+    accs = []
+    f1 = []
+    
+    for value in values:
+        nb = NaiveBayes.train(train_data, value)
+        accs.append(accuracy(nb, test_data))
+        f1.append(f_1(nb, test_data))
+    
+    # Plot both accuracy and F1 score on the same plot
+    plt.figure(figsize=(10, 6))
+    
+    # Plot accuracy with blue color and label
+    plt.plot(values, accs, marker='o', color='blue', label='Accuracy')
+    
+    # Annotate each point with its corresponding accuracy value
+    for i, txt in enumerate(accs):
+        plt.text(values[i], txt, f'{txt:.2f}', ha='center', va='bottom', color='blue')
+    
+    # Plot F1 score with orange color and label
+    plt.plot(values, f1, marker='o', color='orange', label='F1 Score')
+    
+    # Annotate each point with its corresponding F1 score value
+    for i, txt in enumerate(f1):
+        plt.text(values[i], txt, f'{txt:.2f}', ha='center', va='bottom', color='orange')
+    
+    plt.title('Accuracy and F1 Score vs. Smoothing Value')
+    plt.xlabel('Parameter Value')
+    plt.ylabel('Score')
+    plt.ylim(0, 1)
+    plt.legend()
+    
+    # Save the plot to a file
+    plt.savefig(os.path.join(folder_path, 'smoothing_vs_scores_plot.png'))
+    plt.show()
+    
+    #####################################################################
 
 
 def train_feature_eng(train_data, test_data):
@@ -27,7 +68,24 @@ def train_feature_eng(train_data, test_data):
     #         the feature list of your model. Implement at least two
     #         variants using feature1 and feature2
     ########################### STUDENT SOLUTION ########################
-    pass
+    words_to_delete = features1(train_data)
+    
+    modified_train_data = []
+    modified_test_data = []
+    
+    for element, label in train_data:
+        modified_element = [word for word in element if word not in words_to_delete]
+        modified_train_data.append((modified_element, label))
+        
+    for element, label in test_data:
+        modified_element = [word for word in element if word not in words_to_delete]
+        modified_test_data.append((modified_element, label))
+        
+    print(f"Training naive bayes classifier without {len(words_to_delete)} "+
+          "most common features")
+    nb = NaiveBayes.train(modified_train_data)
+    print("Accuracy: ", accuracy(nb, modified_test_data)) #change it for test_data
+    print("F_1: ", f_1(nb, modified_test_data))
     #####################################################################
 
 
