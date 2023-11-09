@@ -25,13 +25,12 @@ class NaiveBayes(object):
         class_likelihoods = {}
 
         for class_name, class_data in self.model.items():
-            if class_name != 'vocabulary':
-                class_likelihood = np.log(class_data['class_likelihood'])
-                for word in x:
-                    if word in class_data['word_probs']:
-                        class_likelihood += np.log(class_data['word_probs'][word])
+            class_likelihood = np.log(class_data['class_likelihood'])
+            for word in x:
+                if word in class_data['word_probs']:
+                    class_likelihood += np.log(class_data['word_probs'][word])
             
-                class_likelihoods[class_name] = class_likelihood
+            class_likelihoods[class_name] = class_likelihood
             
         
         predicted_class = max(class_likelihoods, key=class_likelihoods.get)

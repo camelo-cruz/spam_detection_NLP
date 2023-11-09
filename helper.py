@@ -71,21 +71,17 @@ def train_feature_eng(train_data, test_data):
     words_to_delete = features1(train_data)
     
     modified_train_data = []
-    modified_test_data = []
     
     for element, label in train_data:
         modified_element = [word for word in element if word not in words_to_delete]
         modified_train_data.append((modified_element, label))
         
-    for element, label in test_data:
-        modified_element = [word for word in element if word not in words_to_delete]
-        modified_test_data.append((modified_element, label))
         
     print(f"Training naive bayes classifier without {len(words_to_delete)} "+
           "most common features")
     nb = NaiveBayes.train(modified_train_data)
-    print("Accuracy: ", accuracy(nb, modified_test_data)) #change it for test_data
-    print("F_1: ", f_1(nb, modified_test_data))
+    print("Accuracy: ", accuracy(nb, test_data)) #change it for test_data
+    print("F_1: ", f_1(nb, test_data))
     #####################################################################
 
 
