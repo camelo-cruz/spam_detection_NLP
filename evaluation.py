@@ -47,17 +47,33 @@ def f_1(classifier, data):
     true_labels = [tupla[1] for tupla in data]
     predicted_labels = [classifier.predict(x) for x in X]
     
-    tp = sum((p == 'offensive' and t == 'offensive') for p, t in zip(predicted_labels, true_labels))
-    fp = sum((p == 'offensive' and t == 'nonoffensive') for p, t in zip(predicted_labels, true_labels))
-    fn = sum((p == 'nonoffensive' and t == 'offensive') for p, t in zip(predicted_labels, true_labels))
+    possible_labels = list(set(true_labels)) #not hardocode labels in evaluation
     
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
-    
-    f1_score = float(2 * precision * recall) / (precision + recall)
+    positive = possible_labels[0]
+    print('chosen positive class: ' + positive)
+    negative = possible_labels[1]
+    print('chosen negative class: ' + negative)
     
     
-    return f1_score
+    tp = sum((p == positive and t == positive) for p, t in zip(predicted_labels, true_labels))
+    fp = sum((p == positive and t == negative) for p, t in zip(predicted_labels, true_labels))
+    fn = sum((p == negative and t == positive) for p, t in zip(predicted_labels, true_labels))
+    
+    try:
+        precision = tp / (tp + fp)
+        recall = tp / (tp + fn)
+            
+        f1_score = float(2 * precision * recall) / (precision + recall)
+        
+        return f1_score
+    
+    except Exception as e:
+        
+        print(f'{e} is happening with following valued tp: {tp}, fp: {fp}, fn: {fn}')
+        
+        return 0
+    
+
     ################################################################
 
 

@@ -1,4 +1,8 @@
+from collections import defaultdict
+import pandas as pd
 import numpy as np
+from scipy import sparse
+
 
 
 class LogReg:
@@ -37,7 +41,9 @@ class LogReg:
         #     TODO:
         #         1) Fill in (log) probability prediction
         ################## STUDENT SOLUTION ########################
-        return 0.0
+        results = np.dot(X, self.weights)
+        
+        return results
         ############################################################
 
 
@@ -46,7 +52,18 @@ class LogReg:
         #     TODO:
         #         1) Replace next line with prediction of best class
         ####################### STUDENT SOLUTION ####################
-        return None
+        linear_results = self.p(X)
+        probs = self.softmax(linear_results)
+        
+        predictions = []
+        for value in probs:
+            if value > 0.5: #threshhold for positive class
+                predictions.append([1, 0])
+            else:
+                predictions.append([0, 1])
+                
+        
+        return predictions
         #############################################################
 
 
@@ -62,7 +79,13 @@ def buildw2i(vocab):
     """
     # YOUR CODE HERE
     #################### STUDENT SOLUTION ######################
-    return None
+    
+    mapping = defaultdict(int)
+    index = 0
+    for word in vocab:
+        mapping[word] = index
+        index += 1
+    return mapping
     ############################################################
 
 
@@ -79,7 +102,34 @@ def featurize(data, train_data=None):
         Matrix X and Y.
     """
     # YOUR CODE HERE
-    ##################### STUDENT SOLUTION #######################
-    return None
+    ##################### STUDENT SOLUTION ####################### 
+    vocab = {word:"" for sentence, label in train_data for word in sentence}
+    mapping = buildw2i(vocab)
+
+    vocab_in_int = sorted(np.array(list(mapping.values())))
+    
+    X_data = []
+    Y_data = []
+
+    for sentence, label in data:
+        one_hot_sentence = np.zeros(len(vocab_in_int))
+        for word in sentence:
+            if word in mapping:
+                word_index = mapping[word]
+                one_hot_sentence[word_index] = 1
+
+        X_data.append(one_hot_sentence)
+        if label == 'offensive':
+            Y_data.append([1, 0])  
+        else:
+            Y_data.append([0, 1])
+
+    X = pd.DataFrame.sparse.from_spmatrix(sparse.csr_matrix(X_data))
+    Y = pd.DataFrame.sparse.from_spmatrix(sparse.csr_matrix(Y_data))
+    
+
+    return X, Y
     ##############################################################
+
+
 

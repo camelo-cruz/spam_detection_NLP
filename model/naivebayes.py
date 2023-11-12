@@ -1,5 +1,6 @@
 import numpy as np
 from collections import Counter
+from nltk.stem import WordNetLemmatizer
 
 class NaiveBayes(object):
 
@@ -127,9 +128,14 @@ def features1(data, k=1):
     for key in list(total_counts)[30:]:
         del total_counts[key]
                 
-    features = set(total_counts.keys())
+    words_to_delete = set(total_counts.keys())
     
-    return features
+    modified_train_data = [] 
+    for element, label in data:
+        modified_element = [word for word in element if word not in words_to_delete]
+        modified_train_data.append((modified_element, label))
+    
+    return modified_train_data
     ##################################################################
 
 
@@ -147,6 +153,16 @@ def features2(data, k=1):
     """
     ###################### STUDENT SOLUTION ##########################
     # YOUR CODE HERE
-    return None
+    
+    new_data = []
+    lemmatizer = WordNetLemmatizer()
+    
+    for sentence, label in data:
+        new_sentence = []
+        for word in sentence:
+            new_sentence.append((lemmatizer.lemmatize(word)))
+        new_data.append((new_sentence,label))
+    
+    return new_data
     ##################################################################
 

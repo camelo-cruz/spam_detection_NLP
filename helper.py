@@ -68,20 +68,20 @@ def train_feature_eng(train_data, test_data):
     #         the feature list of your model. Implement at least two
     #         variants using feature1 and feature2
     ########################### STUDENT SOLUTION ########################
-    words_to_delete = features1(train_data)
     
-    modified_train_data = []
-    
-    for element, label in train_data:
-        modified_element = [word for word in element if word not in words_to_delete]
-        modified_train_data.append((modified_element, label))
-        
-        
-    print(f"Training naive bayes classifier without {len(words_to_delete)} "+
-          "most common features")
-    nb = NaiveBayes.train(modified_train_data)
-    print("Accuracy: ", accuracy(nb, test_data)) #change it for test_data
+    without_common = features1(train_data)
+    print("---- Training naive bayes classifier without common words")
+    nb = NaiveBayes.train(without_common)
+    print("Accuracy: ", accuracy(nb, test_data))
     print("F_1: ", f_1(nb, test_data))
+    
+    
+    lematized_train_data = features2(train_data)
+    print("---- Training naive bayes classifier with lemmas ")
+    lematized_nb = NaiveBayes.train(lematized_train_data)
+    print("Accuracy: ", accuracy(lematized_nb, test_data))
+    print("F_1: ", f_1(lematized_nb, test_data))
+    
     #####################################################################
 
 

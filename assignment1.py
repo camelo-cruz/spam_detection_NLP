@@ -60,12 +60,11 @@ def main():
 
 
 if __name__ == "__main__":
-    # (train_data, test_data) = read_hate_tweets(TWEETS_ANNO, TWEETS_TEXT)
-    # model = MODEL_DICT['naive-bayes']
-    # nb = model.train(train_data)
-    # model_results = nb.model
-    
-    # X = [tupla[0] for tupla in train_data]
-    # true_labels = [tupla[1] for tupla in train_data]
-    # predicted_labels = [nb.predict(x) for x in X]
-    main()
+    from model.logreg import featurize
+    (train_data, test_data) = read_hate_tweets(TWEETS_ANNO, TWEETS_TEXT)
+    data = train_data + test_data
+    lr = LogReg()
+    X, Y = featurize(train_data, data)
+    lr.train(X, Y)
+    results = lr.predict(X)
+    # main()
