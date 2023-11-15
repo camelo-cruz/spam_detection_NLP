@@ -62,9 +62,12 @@ def main():
 if __name__ == "__main__":
     from model.logreg import featurize
     (train_data, test_data) = read_hate_tweets(TWEETS_ANNO, TWEETS_TEXT)
-    data = train_data + test_data
+    X_train, Y_train = featurize(train_data, train_data)
+    X_test, Y_test = featurize(test_data, train_data)
+    
     lr = LogReg()
-    X, Y = featurize(train_data, data)
-    lr.train(X, Y)
-    results = lr.predict(X)
+    weights, biases = lr.train(X_train, Y_train)
+    real_labels = Y_train
+    predicted_labels = lr.p(X_train)
+    results = lr.predict(X_train)
     # main()

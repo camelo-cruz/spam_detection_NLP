@@ -11,9 +11,6 @@ def accuracy(classifier, data):
     ##################### STUDENT SOLUTION #########################
     # YOUR CODE HERE
     
-    # true_labels = [0,1,1,1,1,0,0,1,0]
-    # predicted_labels = [0,1,1,1,1,0,0,0,0]
-    
     
     X = [tupla[0] for tupla in data]
     

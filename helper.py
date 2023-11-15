@@ -99,5 +99,6 @@ def train_logreg(train_data, test_data):
     #         with parameter C=0.1.
     #         4) Evaluate the model on the test set.
     ########################### STUDENT SOLUTION ########################
+    
     pass
     #####################################################################

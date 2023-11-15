@@ -1,8 +1,10 @@
-from collections import defaultdict
 import pandas as pd
 import numpy as np
 from scipy import sparse
+from collections import defaultdict
+import warnings
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
 class LogReg:
@@ -17,22 +19,50 @@ class LogReg:
         :return:
         """
         # TODO: adapt for your solution
-        return np.exp(inputs) / float(sum(np.exp(inputs)))
+        
+        # result = []
+
+        # for element in inputs:
+        #     new_element = []
+        #     exp_values = np.exp(element)
+        #     sum_exp_values = sum(exp_values)
+
+        #     for value in exp_values:
+        #         new_element.append(value / float(sum_exp_values))
+
+        #     result.append(new_element)
+        
+        return np.exp(inputs) / np.sum(np.exp(inputs))
 
 
     def train(self, X, Y):
-
         #################### STUDENT SOLUTION ###################
 
         # weights initialization
-        self.weights = np.zeros(X.shape[1])
-
+        self.weights = np.random.randn(X.shape[1], Y.shape[1])
+        self.biases = np.zeros(Y.shape[1])
+        
+        
+        print(f'training logistic regression for {self.num_iter} epochs\n')
         for i in range(self.num_iter):
-            # YOUR CODE HERE
-            #     TODO:
-            #         1) Fill in iterative updating of weights
-            pass
-        return None
+            random_idx = np.random.choice(X.shape[0], 100, replace=False)
+            mini_batch = X.iloc[random_idx]
+            real_labels = Y.iloc[random_idx]
+    
+            predicted_labels = self.p(mini_batch)
+            
+            l2_regularization = 0.5 * 0.01 * np.sum(self.weights**2)
+            
+            loss = -np.sum(real_labels * np.log(predicted_labels), axis=1).mean() + l2_regularization
+            
+            gradient = np.dot(mini_batch.T, (predicted_labels - real_labels)) + (0.01 * self.weights)
+            self.weights -= self.eta * gradient
+            self.biases -= self.eta * np.sum((predicted_labels - real_labels), axis=0)
+            self.biases = self.biases.values
+            
+            print(f'epoch {i+1}\n epoch_loss = {loss}')
+    
+        return self.weights, self.biases
         #########################################################
 
 
@@ -41,9 +71,13 @@ class LogReg:
         #     TODO:
         #         1) Fill in (log) probability prediction
         ################## STUDENT SOLUTION ########################
-        results = np.dot(X, self.weights)
+        linear_results = np.dot(X, self.weights) + self.biases
+
+        probs = []
+        for values in linear_results:       
+            probs.append(self.softmax(values))
         
-        return results
+        return np.array(probs)
         ############################################################
 
 
@@ -52,18 +86,13 @@ class LogReg:
         #     TODO:
         #         1) Replace next line with prediction of best class
         ####################### STUDENT SOLUTION ####################
-        linear_results = self.p(X)
-        probs = self.softmax(linear_results)
         
-        predictions = []
-        for value in probs:
-            if value > 0.5: #threshhold for positive class
-                predictions.append([1, 0])
-            else:
-                predictions.append([0, 1])
-                
+        probs = self.p(X)
         
-        return predictions
+        predictions = np.argmax(probs, axis=1)
+        predictions_one_hot = pd.get_dummies(predictions)
+    
+        return pd.DataFrame(predictions_one_hot)
         #############################################################
 
 
