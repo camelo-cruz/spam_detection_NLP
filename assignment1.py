@@ -65,7 +65,7 @@ if __name__ == "__main__":
     X_train, Y_train = featurize(train_data, train_data)
     X_test, Y_test = featurize(test_data, train_data)
     
-    lr = LogReg()
+    lr = LogReg(eta=1, num_iter=150)
     weights, biases = lr.train(X_train, Y_train)
     real_labels = Y_train
     predicted_labels = lr.p(X_train)

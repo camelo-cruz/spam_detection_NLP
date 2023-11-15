@@ -6,6 +6,7 @@ import warnings
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
+np.random.seed(seed=41)
 
 class LogReg:
     def __init__(self, eta=0.01, num_iter=30):
@@ -45,22 +46,28 @@ class LogReg:
         
         print(f'training logistic regression for {self.num_iter} epochs\n')
         for i in range(self.num_iter):
-            random_idx = np.random.choice(X.shape[0], 100, replace=False)
-            mini_batch = X.iloc[random_idx]
-            real_labels = Y.iloc[random_idx]
+            # random_idx = np.random.choice(X.shape[0], 100, replace=False)
+            # mini_batch = X.iloc[random_idx]
+            # real_labels = Y.iloc[random_idx]
+            
+            mini_batch = X
+            real_labels = Y
     
             predicted_labels = self.p(mini_batch)
             
-            l2_regularization = 0.5 * 0.01 * np.sum(self.weights**2)
-            
-            loss = -np.sum(real_labels * np.log(predicted_labels), axis=1).mean() + l2_regularization
-            
-            gradient = np.dot(mini_batch.T, (predicted_labels - real_labels)) + (0.01 * self.weights)
+            gradient = np.dot(mini_batch.T, (predicted_labels - real_labels)) / len(mini_batch)
             self.weights -= self.eta * gradient
-            self.biases -= self.eta * np.sum((predicted_labels - real_labels), axis=0)
+            self.biases -= np.mean(predicted_labels - real_labels, axis=0)
             self.biases = self.biases.values
             
-            print(f'epoch {i+1}\n epoch_loss = {loss}')
+            
+            loss = - np.sum(real_labels * np.log(predicted_labels), axis=1).mean()
+            
+            predicted_labels = self.p(mini_batch)
+            correct = np.sum(np.round(predicted_labels) == real_labels).mean()
+            accuracy = correct / len(real_labels) 
+            
+            print(f'epoch {i+1}\n accuracy = {accuracy} epoch_loss = {loss}')
     
         return self.weights, self.biases
         #########################################################
