@@ -44,12 +44,8 @@ def f_1(classifier, data):
     true_labels = [tupla[1] for tupla in data]
     predicted_labels = [classifier.predict(x) for x in X]
     
-    possible_labels = list(set(true_labels)) #not hardocode labels in evaluation
-    
-    positive = possible_labels[0]
-    print('chosen positive class: ' + positive)
-    negative = possible_labels[1]
-    print('chosen negative class: ' + negative)
+    positive = 'offensive'
+    negative = 'nonoffensive'
     
     
     tp = sum((p == positive and t == positive) for p, t in zip(predicted_labels, true_labels))

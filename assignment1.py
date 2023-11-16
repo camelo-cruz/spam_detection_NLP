@@ -5,7 +5,9 @@ from evaluation import accuracy, f_1
 from model.naivebayes import NaiveBayes
 from model.logreg import LogReg
 from helper import train_smooth, train_feature_eng, train_logreg
+from numpy import random
 
+random.seed(seed=41)
 
 TWEETS_ANNO = './data/NAACL_SRW_2016.csv'
 TWEETS_TEXT = './data/NAACL_SRW_2016_tweets.json'
@@ -46,7 +48,7 @@ def main():
     if args.model == 'naive-bayes':
         print("Training naive bayes classifier...")
         nb = model.train(train_data)
-        print("Accuracy: ", accuracy(nb, test_data)) #change it for test_data
+        print("Accuracy: ", accuracy(nb, test_data))
         print("F_1: ", f_1(nb, test_data))
 
         if args.test_smooth:
@@ -60,14 +62,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from model.logreg import featurize
-    (train_data, test_data) = read_hate_tweets(TWEETS_ANNO, TWEETS_TEXT)
-    X_train, Y_train = featurize(train_data, train_data)
-    X_test, Y_test = featurize(test_data, train_data)
-    
-    lr = LogReg(eta=1, num_iter=150)
-    weights, biases = lr.train(X_train, Y_train)
-    real_labels = Y_train
-    predicted_labels = lr.p(X_train)
-    results = lr.predict(X_train)
-    # main()
+    main()

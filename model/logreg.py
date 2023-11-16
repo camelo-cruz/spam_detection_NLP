@@ -1,17 +1,19 @@
+import warnings
 import pandas as pd
 import numpy as np
 from scipy import sparse
 from collections import defaultdict
-import warnings
+from nltk.stem import WordNetLemmatizer
+
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-np.random.seed(seed=41)
 
 class LogReg:
-    def __init__(self, eta=0.01, num_iter=30):
+    def __init__(self, eta=0.01, num_iter=30, lambda_value=0.1):
         self.eta = eta
         self.num_iter = num_iter
+        self.lambda_value = lambda_value
 
     def softmax(self, inputs):
         """
@@ -20,19 +22,6 @@ class LogReg:
         :return:
         """
         # TODO: adapt for your solution
-        
-        # result = []
-
-        # for element in inputs:
-        #     new_element = []
-        #     exp_values = np.exp(element)
-        #     sum_exp_values = sum(exp_values)
-
-        #     for value in exp_values:
-        #         new_element.append(value / float(sum_exp_values))
-
-        #     result.append(new_element)
-        
         return np.exp(inputs) / np.sum(np.exp(inputs))
 
 
@@ -43,33 +32,29 @@ class LogReg:
         self.weights = np.random.randn(X.shape[1], Y.shape[1])
         self.biases = np.zeros(Y.shape[1])
         
-        
-        print(f'training logistic regression for {self.num_iter} epochs\n')
+        print(f'training logistic regression for {self.num_iter} epochs with learning rate {self.eta} '
+              f'and regularization lambda {self.lambda_value}\n')
         for i in range(self.num_iter):
-            # random_idx = np.random.choice(X.shape[0], 100, replace=False)
-            # mini_batch = X.iloc[random_idx]
-            # real_labels = Y.iloc[random_idx]
             
-            mini_batch = X
-            real_labels = Y
-    
-            predicted_labels = self.p(mini_batch)
+            Y_hat = self.p(X)
             
-            gradient = np.dot(mini_batch.T, (predicted_labels - real_labels)) / len(mini_batch)
-            self.weights -= self.eta * gradient
-            self.biases -= np.mean(predicted_labels - real_labels, axis=0)
-            self.biases = self.biases.values
+            weight_gradient = np.dot(X.T, (Y_hat - Y)) / len(X)
+            bias_gradient = np.mean(Y_hat - Y, axis=0).values
+            
+            l2_reg_term = (self.lambda_value * np.square(self.weights)) / len(X)
+            
+            self.weights -= self.eta * (weight_gradient + l2_reg_term)
+            self.biases -= self.eta * bias_gradient
             
             
-            loss = - np.sum(real_labels * np.log(predicted_labels), axis=1).mean()
-            
-            predicted_labels = self.p(mini_batch)
-            correct = np.sum(np.round(predicted_labels) == real_labels).mean()
-            accuracy = correct / len(real_labels) 
+            new_probs = self.p(X)
+            loss = - np.sum(Y * np.log(new_probs), axis=1).mean()
+            correct = np.sum(np.round(new_probs) == Y).mean()
+            accuracy = correct / len(Y) 
             
             print(f'epoch {i+1}\n accuracy = {accuracy} epoch_loss = {loss}')
     
-        return self.weights, self.biases
+        return None
         #########################################################
 
 
@@ -125,7 +110,7 @@ def buildw2i(vocab):
     ############################################################
 
 
-def featurize(data, train_data=None):
+def featurize(data, train_data=None, preprocessing=False):
     """
     Convert data into X and Y where X is the input and
     Y is the label.
@@ -138,18 +123,32 @@ def featurize(data, train_data=None):
         Matrix X and Y.
     """
     # YOUR CODE HERE
-    ##################### STUDENT SOLUTION ####################### 
-    vocab = {word:"" for sentence, label in train_data for word in sentence}
+    ##################### STUDENT SOLUTION #######################
+    
+    #some optional preprocessing for eliminating features == words
+    if preprocessing:
+        lemmatizer = WordNetLemmatizer()
+        postprocessed_data = sorted([lemmatizer.lemmatize(word) for sentence, label in train_data for word in sentence])
+        postprocessed_data = postprocessed_data[30:-30]
+    else:
+        postprocessed_data = [word for sentence, label in train_data for word in sentence]
+        
+    vocab = {word:"" for word in postprocessed_data}
     mapping = buildw2i(vocab)
-
+    
+    #Put the words in order
     vocab_in_int = sorted(np.array(list(mapping.values())))
     
     X_data = []
     Y_data = []
 
+    #Create the matrix with one hot encoding
     for sentence, label in data:
+        #initialiting a matrix of zeros with length vocabulary
         one_hot_sentence = np.zeros(len(vocab_in_int))
         for word in sentence:
+            if preprocessing:
+                word = lemmatizer.lemmatize(word)
             if word in mapping:
                 word_index = mapping[word]
                 one_hot_sentence[word_index] = 1
