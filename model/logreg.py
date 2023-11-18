@@ -129,7 +129,7 @@ def featurize(data, train_data=None, preprocessing=False):
     if preprocessing:
         lemmatizer = WordNetLemmatizer()
         postprocessed_data = sorted([lemmatizer.lemmatize(word) for sentence, label in train_data for word in sentence])
-        postprocessed_data = postprocessed_data[30:-30]
+        postprocessed_data = postprocessed_data[30:]
     else:
         postprocessed_data = [word for sentence, label in train_data for word in sentence]
         
@@ -151,7 +151,7 @@ def featurize(data, train_data=None, preprocessing=False):
                 word = lemmatizer.lemmatize(word)
             if word in mapping:
                 word_index = mapping[word]
-                one_hot_sentence[word_index] = 1
+                one_hot_sentence[word_index] += 1
 
         X_data.append(one_hot_sentence)
         if label == 'offensive':
