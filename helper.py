@@ -99,12 +99,12 @@ def train_logreg(train_data, test_data):
     #         with parameter C=0.1.
     #         4) Evaluate the model on the test set.
     ########################### STUDENT SOLUTION ########################
-    X_train, Y_train = featurize(train_data, train_data, preprocessing=False)
+    X_train, Y_train = featurize(train_data, train_data, preprocessing=True)
     lr = LogReg(num_iter=10, lambda_value=0.1)
     lr.train(X_train, Y_train)
     print('--------logistic regression was trained--------')
     
-    X_test, Y_test = featurize(test_data, train_data, preprocessing=False)
+    X_test, Y_test = featurize(test_data, train_data, preprocessing=True)
     predictions = lr.predict(X_test)
     correct = np.sum(predictions == Y_test).mean()
     accuracy = correct / len(Y_test) 
