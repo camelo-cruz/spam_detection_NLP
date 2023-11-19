@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
 class LogReg:
-    def __init__(self, eta=0.01, num_iter=30, lambda_value=0.1, batch_size=150):
+    def __init__(self, eta=0.01, num_iter=30, lambda_value=0.1, batch_size=100):
         self.eta = eta
         self.num_iter = num_iter
         self.lambda_value = lambda_value
@@ -37,7 +37,7 @@ class LogReg:
         print(f'training logistic regression for {self.num_iter} epochs with learning rate {self.eta} '
               f'and regularization lambda {self.lambda_value}\n')
         for i in range(self.num_iter):
-            for batch in tqdm(self.create_batch(X, Y), total=85,
+            for batch in tqdm(self.create_batch(X, Y), total=int(X.shape[0]/self.batch_size),
                               desc=f'training epoch {i} with minibatches'):
                 
                 batch_X, batch_Y = batch
