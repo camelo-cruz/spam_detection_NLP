@@ -41,16 +41,21 @@ class LogReg:
                               desc='training with minibatches'):
                 
                 batch_X, batch_Y = batch
+                
+                #compute gradients
                 weight_gradient = np.dot(batch_X.T, (self.p(batch_X) - batch_Y))
                 bias_gradient = np.mean(self.p(batch_X) - batch_Y, axis=0).values
+                l2_reg_gradient = (self.lambda_value * self.weights) / batch_X.shape[0]
                 
-                l2_reg_gradient = self.lambda_value * 2 * self.weights
+                #update weights
                 self.weights -= self.eta * weight_gradient + l2_reg_gradient
                 self.biases -= self.eta * bias_gradient
             
+            #compute loss with l2 regularization with lambda
+            l2_reg_term = self.lambda_value * np.sum(self.weights**2) / (2 * X.shape[0])
+            loss = - np.sum(Y * np.log(self.p(X)), axis=1).mean() + l2_reg_term
             
-            loss = - np.sum(Y * np.log(self.p(X)), axis=1).mean() + (self.lambda_value * 
-                                                                     np.sum(np.square(self.weights)))
+            #compute accuracy
             correct = np.sum(self.predict(X) == Y).mean()
             accuracy = correct / Y.shape[0] 
             
