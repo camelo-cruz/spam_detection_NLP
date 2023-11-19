@@ -34,11 +34,11 @@ class LogReg:
         self.weights = np.random.randn(X.shape[1], Y.shape[1])
         self.biases = np.random.randn(Y.shape[1])
         
-        print(f'training logistic regression for {self.num_iter} epochs with learning rate {self.eta} '
-              f'and regularization lambda {self.lambda_value}\n')
+        print(f'training logistic regression for {self.num_iter} epochs with learning rate {self.eta}, '
+              f'regularization lambda {self.lambda_value} and mini-batch size {self.batch_size}\n')
         for i in range(self.num_iter):
             for batch in tqdm(self.create_batch(X, Y), total=int(X.shape[0]/self.batch_size),
-                              desc=f'training epoch {i} with minibatches'):
+                              desc=f'training epoch {i+1}'):
                 
                 batch_X, batch_Y = batch
                 
@@ -59,7 +59,7 @@ class LogReg:
             correct = np.sum(self.predict(X) == Y).mean()
             accuracy = correct / Y.shape[0] 
             
-            print(f'epoch {i+1}\n accuracy = {accuracy} epoch_loss = {loss}')
+            print(f'epoch {i+1} evaluation:\naccuracy = {accuracy} epoch_loss = {loss}')
     
         #########################################################
 
