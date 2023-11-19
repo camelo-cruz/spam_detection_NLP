@@ -38,7 +38,7 @@ class LogReg:
               f'and regularization lambda {self.lambda_value}\n')
         for i in range(self.num_iter):
             for batch in tqdm(self.create_batch(X, Y), total=85,
-                              desc='training with minibatches'):
+                              desc=f'training epoch {i} with minibatches'):
                 
                 batch_X, batch_Y = batch
                 
