@@ -141,7 +141,7 @@ def featurize(data, train_data=None, preprocessing=False):
     if preprocessing:
         lemmatizer = WordNetLemmatizer()
         postprocessed_data = sorted([lemmatizer.lemmatize(word) for sentence, label in train_data for word in sentence])
-        postprocessed_data = postprocessed_data[30:]
+        postprocessed_data = postprocessed_data[1000:]
     else:
         postprocessed_data = [word for sentence, label in train_data for word in sentence]
         
